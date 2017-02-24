@@ -8,10 +8,7 @@
 <!ENTITY launch    		"Settings/rclone-beta">
 <!ENTITY pluginURL 		"https://raw.githubusercontent.com/Waseh/rclone-unraid/beta/plugin/rclone.plg">
 <!ENTITY bundleURL  		"https://raw.githubusercontent.com/Waseh/rclone-unraid/beta/archive/rclone-beta-&bundleversion;-x86_64-1.txz">
-<!ENTITY rcloneversion		"v1.35-123-g6e0e1ad">
-<!ENTITY rclonefile  		"rclone-&rcloneversion;β-linux-amd64">
-<!ENTITY rcloneurl		"http://beta.rclone.org/&rcloneversion;/&rclonefile;.zip">
-<!ENTITY md5         		"b260c6e3fa832f76c40a36bd0db12d36">
+<!ENTITY rcloneurl		"http://beta.rclone.org/rclone-beta-latest-linux-amd64.zip">
 <!ENTITY md5bundle     		"d0e08a44127b71580fadeb903087080b">
 ]>
 
@@ -128,11 +125,28 @@ fi
 <!--
 Get the rclone zip.
 -->
-<FILE Name="/boot/config/plugins/&name;/install/rclone-&rcloneversion;.zip">
+<FILE Name="/boot/config/plugins/&name;/install/rclone.zip">
 <URL>&rcloneurl;</URL>
-<MD5>&md5;</MD5>
 </FILE>
 
+<!--
+MD5 Check.
+-->
+<FILE Run="/bin/bash">
+<INLINE>
+if [ -f "$CTRLFILES" ]; then
+	rclone="/boot/config/plugins/&name;/install/rclone.zip"
+	md5=$(curl http://downloads.rclone.org/ | grep -A 5 'current-linux-amd64.zip' | grep -o '<td>................................</td>' | cut -c 5-36)
+	MD5TEST=`echo "$md5  $rclone" | md5sum --quiet --status -c - &amp;&amp; echo "1" || echo "0"`
+			if [ "$MD5TEST" == "1" ]; then
+			echo "Download OK: rclone zip passed MD5 check"
+			else
+				echo "Install failed: rclone zip failed MD5 check"
+				rm -f "$rclone"
+				exit 1
+			fi
+</INLINE>
+</FILE>
 
 <!--
 Get bundle.
@@ -157,10 +171,9 @@ if [ -d /boot/config/plugins/&name;/install/rclone-v*/ ]; then
   rm -rf /boot/config/plugins/&name;/install/rclone-v*/
 fi;
 
-rm -f $(ls /boot/config/plugins/&name;/install/rclone*.zip 2>/dev/null | grep -v '&rcloneversion;')
 rm -f $(ls /boot/config/plugins/&name;/install/rclone*.txz 2>/dev/null | grep -v '&bundleversion;')
 
-unzip /boot/config/plugins/&name;/install/rclone-&rcloneversion;.zip -d /boot/config/plugins/&name;/install/
+unzip /boot/config/plugins/&name;/install/rclone.zip -d /boot/config/plugins/&name;/install/
 	
 cp /boot/config/plugins/&name;/install/rclone-v*/rclone /usr/sbin/rcloneorig
 chown root:root /usr/sbin/rcloneorig
