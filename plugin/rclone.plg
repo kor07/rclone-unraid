@@ -128,7 +128,7 @@ Version Check
 <FILE Run="/bin/bash">
 <INLINE>
 	rclone="/boot/config/plugins/&name;/install/rclone.zip"
-	md5=$(curl http://downloads.rclone.org/ | grep -A 5 'current-linux-amd64.zip' | grep -o '<td>................................</td>' | cut -c 5-36)
+	md5=$(curl -s http://downloads.rclone.org/ | grep -A 5 'current-linux-amd64.zip' | grep -o '<td>................................</td>' | cut -c 5-36)
 	MD5TEST=`echo "$md5  $rclone" | md5sum --quiet --status -c - &amp;&amp; echo "1" || echo "0"`
 			if [ "$MD5TEST" == "0" ]; then
 			echo "New rclone version found"
@@ -150,7 +150,7 @@ MD5 Check.
 <FILE Run="/bin/bash">
 <INLINE>
 	rclone="/boot/config/plugins/&name;/install/rclone.zip"
-	md5=$(curl http://downloads.rclone.org/ | grep -A 5 'current-linux-amd64.zip' | grep -o '<td>................................</td>' | cut -c 5-36)
+	md5=$(curl -s http://downloads.rclone.org/ | grep -A 5 'current-linux-amd64.zip' | grep -o '<td>................................</td>' | cut -c 5-36)
 	MD5TEST=`echo "$md5  $rclone" | md5sum --quiet --status -c - &amp;&amp; echo "1" || echo "0"`
 			if [ "$MD5TEST" == "1" ]; then
 			echo "Download OK: rclone zip passed MD5 check"
