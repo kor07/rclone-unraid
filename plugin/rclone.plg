@@ -134,7 +134,6 @@ MD5 Check.
 -->
 <FILE Run="/bin/bash">
 <INLINE>
-if [ -f "$CTRLFILES" ]; then
 	rclone="/boot/config/plugins/&name;/install/rclone.zip"
 	md5=$(curl http://downloads.rclone.org/ | grep -A 5 'current-linux-amd64.zip' | grep -o '<td>................................</td>' | cut -c 5-36)
 	MD5TEST=`echo "$md5  $rclone" | md5sum --quiet --status -c - &amp;&amp; echo "1" || echo "0"`
